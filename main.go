@@ -133,7 +133,7 @@ func (s *Service) Check(ctx *gin.Context, isChange bool) {
 		return
 	}
 
-	p, err := s.getMiniProgram(req.Name, isChange)
+	p, err := s.getMiniProgram(req.Name, req.Version, isChange)
 
 	if err != nil {
 		s.errorResponse(ctx, http.StatusBadRequest, 5001, "不存在的项目名称")
@@ -192,7 +192,7 @@ func (s *Service) Set(ctx *gin.Context, isChange bool) {
 		return
 	}
 
-	p, err := s.getOrCreateMiniProgram(req.ProgramsName, req.Status, isChange)
+	p, err := s.getOrCreateMiniProgram(req.ProgramsName, req.Status, req.Version, isChange)
 
 	if err != nil {
 		s.errorResponse(ctx, http.StatusInternalServerError, 5002, fmt.Sprintf("保存失败: %v", err))
@@ -213,14 +213,14 @@ func (s *Service) chooseDao(isChange bool) *dao.MiniProgramsDAO {
 }
 
 // getMiniProgram 从缓存或数据库获取项目
-func (s *Service) getMiniProgram(name string, isChange bool) (*model.MiniPrograms, error) {
-	key := s.cache.GetIFChangePreFix(name, isChange)
+func (s *Service) getMiniProgram(name string, version string, isChange bool) (*model.MiniPrograms, error) {
+	key := s.cache.GetIFChangePreFix(name, version, isChange)
 	if p, ok := s.cache.Load(key); ok {
 		return p, nil
 	}
 
 	Dao := s.chooseDao(isChange)
-	p, err := Dao.Find(name)
+	p, err := Dao.Find(name, version)
 	if err != nil {
 		return nil, err
 	}
@@ -230,14 +230,14 @@ func (s *Service) getMiniProgram(name string, isChange bool) (*model.MiniProgram
 }
 
 // getOrCreateMiniProgram 获取或创建项目
-func (s *Service) getOrCreateMiniProgram(name string, status bool, isChange bool) (*model.MiniPrograms, error) {
+func (s *Service) getOrCreateMiniProgram(name string, status bool, version string, isChange bool) (*model.MiniPrograms, error) {
 	Dao := s.chooseDao(isChange)
-	key := s.cache.GetIFChangePreFix(name, isChange)
+	key := s.cache.GetIFChangePreFix(name, version, isChange)
 
-	p, err := Dao.Find(name)
+	p, err := Dao.Find(name, version)
 	if err != nil {
 		// 如果项目不存在，创建新项目
-		p = &model.MiniPrograms{Name: name, Status: status}
+		p = &model.MiniPrograms{Name: name, Status: status, Version: version}
 		if err := Dao.Save(*p); err != nil {
 			return nil, err
 		}

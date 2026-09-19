@@ -31,10 +31,15 @@ func (c *Cache) Store(key string, resp *model.MiniPrograms) {
 	c.cache.Store(key, resp)
 }
 
-func (c *Cache) GetIFChangePreFix(key string, ifChange bool) string {
+func (c *Cache) GetIFChangePreFix(name, version string, ifChange bool) string {
+	key := c.mergeFields(name, version)
 	if ifChange {
 		return key
 	} else {
 		return "change:" + key
 	}
+}
+
+func (c *Cache) mergeFields(name, version string) string {
+	return name + ":" + version
 }

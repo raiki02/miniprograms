@@ -219,6 +219,9 @@
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         },
@@ -255,6 +258,9 @@
                     "type": "boolean"
                 },
                 "username": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }

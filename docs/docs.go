@@ -230,6 +230,9 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "type": "string"
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         },
@@ -266,6 +269,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "username": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }

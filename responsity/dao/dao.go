@@ -35,9 +35,13 @@ func NewMiniProgramsDAO(db *gorm.DB, table string) *MiniProgramsDAO {
 }
 
 // 添加table变量，两个接口操作两个表
-func (d *MiniProgramsDAO) Find(name string) (*model.MiniPrograms, error) {
+func (d *MiniProgramsDAO) Find(name, version string) (*model.MiniPrograms, error) {
 	var miniPrograms model.MiniPrograms
-	err := d.db.Table(d.table).Model(&model.MiniPrograms{}).Where("name= ?", name).First(&miniPrograms).Error
+	gDB := d.db.Table(d.table).Model(&model.MiniPrograms{}).Where("name= ?", name)
+	if version != "" {
+		gDB = gDB.Where("version = ?", version)
+	}
+	err := gDB.First(&miniPrograms).Error
 	if err != nil {
 		return nil, err
 	}
@@ -45,5 +49,10 @@ func (d *MiniProgramsDAO) Find(name string) (*model.MiniPrograms, error) {
 }
 
 func (d *MiniProgramsDAO) Save(miniPrograms model.MiniPrograms) error {
-	return d.db.Table(d.table).Model(&model.MiniPrograms{}).Where("name= ?", miniPrograms.Name).Save(&miniPrograms).Error
+	gDB := d.db.Table(d.table).Model(&model.MiniPrograms{}).Where("name= ?", miniPrograms.Name)
+	if miniPrograms.Version != "" {
+		gDB = gDB.Where("version = ?", miniPrograms.Version)
+	}
+
+	return gDB.Save(&miniPrograms).Error
 }

@@ -3,6 +3,8 @@ definitions:
     properties:
       name:
         type: string
+      version:
+        type: string
     type: object
   api.CheckStatusResp:
     properties:
@@ -26,6 +28,8 @@ definitions:
       status:
         type: boolean
       username:
+        type: string
+      version:
         type: string
     type: object
 info:
